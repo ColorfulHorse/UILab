@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/root_nav"
+    app:startDestination="@id/entranceFragment"
+    >
+    <fragment
+        android:id="@+id/entranceFragment"
+        android:name="com.greensun.uisamples.list.RecyclerViewEntryFragment"
+        android:label="fragment_entrance"
+        tools:layout="@layout/fragment_recycler_view_entry" >
+        <action
+            android:id="@+id/action_entranceFragment_to_grid_list_fragment"
+            app:destination="@id/grid_list_fragment" />
+        <action
+            android:id="@+id/action_entranceFragment_to_stagger_list_fragment"
+            app:destination="@id/stagger_list_fragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/grid_list_fragment"
+        android:name="com.greensun.uisamples.list.GridListFragment"
+        tools:layout="@layout/fragment_grid_list"
+        />
+    <fragment
+        android:id="@+id/stagger_list_fragment"
+        android:name="com.greensun.uisamples.list.StaggeredListFragment"
+        tools:layout="@layout/fragment_stagger_list"
+        />
+</navigation>
