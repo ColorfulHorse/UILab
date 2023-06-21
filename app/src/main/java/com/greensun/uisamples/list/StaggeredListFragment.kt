@@ -31,7 +31,7 @@ class StaggeredListFragment : ViewBindingFragment<FragmentStaggerListBinding>() 
         mViewBinding.recyclerView.addItemDecoration(
             UltraSpaceItemDecoration.Builder()
                 .dividerWidth(20, 40)
-                .edge(60, 60)
+                .padding(60, 60)
                 .build()
         )
         val adapter = object : BaseQuickAdapter<Int, QuickViewHolder>(list) {

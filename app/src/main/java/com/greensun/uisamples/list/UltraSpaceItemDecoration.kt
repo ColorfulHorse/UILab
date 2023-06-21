@@ -9,7 +9,7 @@ import androidx.recyclerview.widget.StaggeredGridLayoutManager
 
 /**
  * 万用recyclerView分隔线，支持linear grid staggered LayoutManager
- * 支持横竖向、跨行等情况，支持边缘、横纵向分隔线不同宽度
+ * 支持横竖向、跨列等情况，支持边缘、横纵向分隔线不同宽度
  * @author greensun
  * @since 2023/6/13
  * blog https://juejin.cn/user/3263006244363095
@@ -24,8 +24,8 @@ open class UltraSpaceItemDecoration protected constructor() : RecyclerView.ItemD
     protected var crossWidth = 0
 
     // 边缘宽度
-    protected var mainEdge = 0
-    protected var crossEdge = 0
+    protected var mainPadding = 0
+    protected var crossPadding = 0
     // 哪些item需要忽略间隔
     protected var ignorePredict: IgnorePredict? = null
 
@@ -39,9 +39,9 @@ open class UltraSpaceItemDecoration protected constructor() : RecyclerView.ItemD
             return this
         }
 
-        fun edge(mainEdge: Int, crossEdge: Int): Builder {
-            itemDecoration.mainEdge = mainEdge
-            itemDecoration.crossEdge = crossEdge
+        fun padding(mainPadding: Int, crossPadding: Int): Builder {
+            itemDecoration.mainPadding = mainPadding
+            itemDecoration.crossPadding = crossPadding
             return this
         }
 
@@ -128,37 +128,37 @@ open class UltraSpaceItemDecoration protected constructor() : RecyclerView.ItemD
         if (isVertical) {
             when (position) {
                 0 -> {
-                    outRect.top = mainEdge
+                    outRect.top = mainPadding
                 }
 
                 size - 1 -> {
                     outRect.top = mainWidth
-                    outRect.bottom = mainEdge
+                    outRect.bottom = mainPadding
                 }
 
                 else -> {
                     outRect.top = mainWidth
                 }
             }
-            outRect.left = crossEdge
-            outRect.right = crossEdge
+            outRect.left = crossPadding
+            outRect.right = crossPadding
         } else {
             when (position) {
                 0 -> {
-                    outRect.left = mainEdge
+                    outRect.left = mainPadding
                 }
 
                 size - 1 -> {
                     outRect.left = mainWidth
-                    outRect.right = mainEdge
+                    outRect.right = mainPadding
                 }
 
                 else -> {
                     outRect.left = mainWidth
                 }
             }
-            outRect.top = crossEdge
-            outRect.bottom = crossEdge
+            outRect.top = crossPadding
+            outRect.bottom = crossPadding
         }
     }
 
@@ -170,10 +170,10 @@ open class UltraSpaceItemDecoration protected constructor() : RecyclerView.ItemD
         isFirstGroup: Boolean, isLastGroup: Boolean,
         spanCount: Int, spanIndex: Int, spanSize: Int
     ) {
-        val itemUseWidth = (crossEdge * 2 + crossWidth * (spanCount - 1)) / spanCount
-        val lt = crossWidth * spanIndex - itemUseWidth * spanIndex + crossEdge
+        val itemUseWidth = (crossPadding * 2 + crossWidth * (spanCount - 1)) / spanCount
+        val lt = crossWidth * spanIndex - itemUseWidth * spanIndex + crossPadding
         val rb =
-            itemUseWidth * (spanIndex + spanSize) - crossWidth * (spanIndex + spanSize - 1) - crossEdge
+            itemUseWidth * (spanIndex + spanSize) - crossWidth * (spanIndex + spanSize - 1) - crossPadding
         if (isVertical) {
             outRect.left = lt
             outRect.right = rb
@@ -184,18 +184,18 @@ open class UltraSpaceItemDecoration protected constructor() : RecyclerView.ItemD
         if (isFirstGroup) {
             // 是第一一行
             if (isVertical) {
-                outRect.top = mainEdge
+                outRect.top = mainPadding
             } else {
-                outRect.left = mainEdge
+                outRect.left = mainPadding
             }
         } else if (isLastGroup) {
             // 是最后一行要加边缘
             if (isVertical) {
                 outRect.top = mainWidth
-                outRect.bottom = mainEdge
+                outRect.bottom = mainPadding
             } else {
                 outRect.left = mainWidth
-                outRect.right = mainEdge
+                outRect.right = mainPadding
             }
         } else {
             if (isVertical) {
