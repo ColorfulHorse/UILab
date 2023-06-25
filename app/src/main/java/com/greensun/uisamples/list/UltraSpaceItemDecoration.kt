@@ -67,10 +67,9 @@ open class UltraSpaceItemDecoration protected constructor() : RecyclerView.ItemD
         val size = adapter.itemCount
         val position = parent.getChildAdapterPosition(view)
         if (position == RecyclerView.NO_POSITION) return
-        if (ignorePredict != null) {
-            if (ignorePredict!!.ignore(position)) {
-                return
-            }
+        ignorePredict?: return
+        if (ignorePredict!!.ignore(position)) {
+            return
         }
         if (manager is LinearLayoutManager) {
             val isVertical = manager.orientation == LinearLayoutManager.VERTICAL
@@ -84,10 +83,18 @@ open class UltraSpaceItemDecoration protected constructor() : RecyclerView.ItemD
                 val spanIndex = manager.spanSizeLookup.getSpanIndex(position, spanCount)
                 val groupIndex = manager.spanSizeLookup.getSpanGroupIndex(position, spanCount)
                 val lastGroupIndex = manager.spanSizeLookup.getSpanGroupIndex(size - 1, spanCount)
-                getGridItemOffsets(outRect, isVertical, groupIndex == 0, groupIndex == lastGroupIndex, spanCount, spanIndex, spanSize)
+                getItemMainOffsets(outRect, isVertical, groupIndex == 0, groupIndex == lastGroupIndex)
+                getItemCrossOffsets(outRect, isVertical, spanCount, spanIndex, spanSize)
                 return
             }
-            getLinearItemOffsets(outRect, position, isVertical, size)
+            getItemMainOffsets(outRect, isVertical, position == 0, position == size - 1)
+            if (isVertical) {
+                outRect.left = crossPadding
+                outRect.right = crossPadding
+            } else {
+                outRect.top = crossPadding
+                outRect.bottom = crossPadding
+            }
         } else if (manager is StaggeredGridLayoutManager) {
             val isVertical = manager.orientation == StaggeredGridLayoutManager.VERTICAL
             val lp = view.layoutParams
@@ -114,76 +121,16 @@ open class UltraSpaceItemDecoration protected constructor() : RecyclerView.ItemD
                     }
                 }
                 val spanSize = if (lp.isFullSpan) spanCount else 1
-                getGridItemOffsets(outRect, isVertical, isFirstGroup, isLastGroup, spanCount, spanIndex, spanSize)
+                getItemMainOffsets(outRect, isVertical, isFirstGroup, isLastGroup)
+                getItemCrossOffsets(outRect, isVertical, spanCount, spanIndex, spanSize)
             }
         }
     }
 
     /**
-     * 水平布局
+     * 主轴间隔
      */
-    private fun getLinearItemOffsets(
-        outRect: Rect,
-        position: Int,
-        isVertical: Boolean,
-        size: Int
-    ) {
-        if (isVertical) {
-            when (position) {
-                0 -> {
-                    outRect.top = mainPadding
-                }
-
-                size - 1 -> {
-                    outRect.top = mainWidth
-                    outRect.bottom = mainPadding
-                }
-
-                else -> {
-                    outRect.top = mainWidth
-                }
-            }
-            outRect.left = crossPadding
-            outRect.right = crossPadding
-        } else {
-            when (position) {
-                0 -> {
-                    outRect.left = mainPadding
-                }
-
-                size - 1 -> {
-                    outRect.left = mainWidth
-                    outRect.right = mainPadding
-                }
-
-                else -> {
-                    outRect.left = mainWidth
-                }
-            }
-            outRect.top = crossPadding
-            outRect.bottom = crossPadding
-        }
-    }
-
-    /**
-     * 网格布局和瀑布流
-     */
-    private fun getGridItemOffsets(
-        outRect: Rect, isVertical: Boolean,
-        isFirstGroup: Boolean, isLastGroup: Boolean,
-        spanCount: Int, spanIndex: Int, spanSize: Int
-    ) {
-        val itemUseWidth = (crossPadding * 2 + crossWidth * (spanCount - 1)) / spanCount
-        val lt = crossWidth * spanIndex - itemUseWidth * spanIndex + crossPadding
-        val rb =
-            itemUseWidth * (spanIndex + spanSize) - crossWidth * (spanIndex + spanSize - 1) - crossPadding
-        if (isVertical) {
-            outRect.left = lt
-            outRect.right = rb
-        } else {
-            outRect.top = lt
-            outRect.bottom = rb
-        }
+    private fun getItemMainOffsets(outRect: Rect, isVertical: Boolean, isFirstGroup: Boolean, isLastGroup: Boolean) {
         if (isFirstGroup) {
             // 是第一行
             if (isVertical) {
@@ -206,6 +153,22 @@ open class UltraSpaceItemDecoration protected constructor() : RecyclerView.ItemD
             } else {
                 outRect.left = mainWidth
             }
+        }
+    }
+
+    /**
+     * 交叉轴间隔
+     */
+    private fun getItemCrossOffsets(outRect: Rect, isVertical: Boolean, spanCount: Int, spanIndex: Int, spanSize: Int) {
+        val itemUseWidth = (crossPadding * 2 + crossWidth * (spanCount - 1)) / spanCount
+        val lt = crossWidth * spanIndex - itemUseWidth * spanIndex + crossPadding
+        val rb = itemUseWidth * (spanIndex + spanSize) - crossWidth * (spanIndex + spanSize - 1) - crossPadding
+        if (isVertical) {
+            outRect.left = lt
+            outRect.right = rb
+        } else {
+            outRect.top = lt
+            outRect.bottom = rb
         }
     }
 
