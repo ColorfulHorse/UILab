@@ -93,17 +93,20 @@ open class UltraSpaceItemDecoration protected constructor() : RecyclerView.ItemD
             val lp = view.layoutParams
             if (lp is StaggeredGridLayoutManager.LayoutParams) {
                 val spanCount = manager.spanCount
+                // 前面没有跨列item时当前item的期望下标
                 val exceptSpanIndex = position % spanCount
+                // 真实的item下标
                 val spanIndex = lp.spanIndex
-                // position属于第一行并且没有换行才是真正的第一行
+                // position原属于第一行并且此item之前没有跨列的情况，当前item才属于第一行
                 val isFirstGroup = position < spanCount && exceptSpanIndex == spanIndex
                 var isLastGroup = false
                 if (size - position <= spanCount) {
+                    // position原属于最后一行
                     val lastItemView = manager.findViewByPosition(size - 1)
                     if (lastItemView != null) {
                         val lastLp = lastItemView.layoutParams
                         if (lastLp is StaggeredGridLayoutManager.LayoutParams) {
-                            // position距离和span下标距离相等说明在最后一行
+                            // 列表最后一个item和当前item的spanIndex差等于position之差说明它们之间没有跨列的情况，当前item属于最后一行
                             if (lastLp.spanIndex - spanIndex == size - 1 - position) {
                                 isLastGroup = true
                             }
@@ -182,7 +185,7 @@ open class UltraSpaceItemDecoration protected constructor() : RecyclerView.ItemD
             outRect.bottom = rb
         }
         if (isFirstGroup) {
-            // 是第一一行
+            // 是第一行
             if (isVertical) {
                 outRect.top = mainPadding
             } else {
