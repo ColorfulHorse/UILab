@@ -1,6 +1,7 @@
 package com.greensun.uisamples.list
 
 import android.graphics.Rect
+import android.util.Log
 import android.view.View
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -67,9 +68,10 @@ open class UltraSpaceItemDecoration protected constructor() : RecyclerView.ItemD
         val size = adapter.itemCount
         val position = parent.getChildAdapterPosition(view)
         if (position == RecyclerView.NO_POSITION) return
-        ignorePredict?: return
-        if (ignorePredict!!.ignore(position)) {
-            return
+        if (ignorePredict != null) {
+            if (ignorePredict!!.ignore(position)) {
+                return
+            }
         }
         if (manager is LinearLayoutManager) {
             val isVertical = manager.orientation == LinearLayoutManager.VERTICAL
@@ -158,11 +160,18 @@ open class UltraSpaceItemDecoration protected constructor() : RecyclerView.ItemD
 
     /**
      * 交叉轴间隔
+     * [spanIndex] 当前item的以第几列开始
+     * [spanSize] 当前item占用的列数
      */
     private fun getItemCrossOffsets(outRect: Rect, isVertical: Boolean, spanCount: Int, spanIndex: Int, spanSize: Int) {
-        val itemUseWidth = (crossPadding * 2 + crossWidth * (spanCount - 1)) / spanCount
-        val lt = crossWidth * spanIndex - itemUseWidth * spanIndex + crossPadding
-        val rb = itemUseWidth * (spanIndex + spanSize) - crossWidth * (spanIndex + spanSize - 1) - crossPadding
+        // 每列占用的间隔
+        val spanUsedWidth = (crossPadding * 2 + crossWidth * (spanCount - 1)) / spanCount
+        // 到当前item的左边为止的总间隔 - 到上一个item为止需要使用的总间隔
+        val lt = crossWidth * spanIndex + crossPadding - spanUsedWidth * spanIndex
+        // 到当前item为止需要使用的总间隔 - 到当前item右边为止的总间隔
+//        val rb = spanUsedWidth * (spanIndex + spanSize) - crossWidth * (spanIndex + spanSize - 1) - crossPadding
+        // 当前item需要使用的总间隔 - 当前item已经使用的总间隔
+        val rb = spanUsedWidth * spanSize - crossWidth * (spanSize - 1) - lt
         if (isVertical) {
             outRect.left = lt
             outRect.right = rb
