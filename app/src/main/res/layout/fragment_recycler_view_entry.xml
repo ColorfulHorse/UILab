@@ -21,4 +21,11 @@
         android:layout_height="wrap_content"
         android:text="瀑布流列表"
         />
+
+    <Button
+        android:id="@+id/wave"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="律动view"
+        />
 </LinearLayout>

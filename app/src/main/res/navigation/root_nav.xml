@@ -27,4 +27,10 @@
         android:name="com.greensun.uisamples.list.StaggeredListFragment"
         tools:layout="@layout/fragment_stagger_list"
         />
+
+    <fragment
+        android:id="@+id/wave_fragment"
+        android:name="com.greensun.uisamples.WaveFragment"
+        tools:layout="@layout/fragment_wave"
+        />
 </navigation>

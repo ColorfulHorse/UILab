@@ -18,5 +18,9 @@ class RecyclerViewEntryFragment : ViewBindingFragment<FragmentRecyclerViewEntryB
         mViewBinding.staggeredList.setOnClickListener {
             findNavController().navigate(R.id.stagger_list_fragment)
         }
+
+        mViewBinding.wave.setOnClickListener {
+            findNavController().navigate(R.id.wave_fragment)
+        }
     }
 }
